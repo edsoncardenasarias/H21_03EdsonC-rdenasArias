@@ -8,6 +8,16 @@ GO
 USE VGCONF;
 GO
 
+-- Table: UBIGEO
+CREATE TABLE UBIGEO (
+    CODUBI int  NOT NULL,
+    DEPUBI varchar(100)  NOT NULL,
+    PROUBI varchar(100)  NOT NULL,
+    DISUBI varchar(100)  NOT NULL,
+    CONSTRAINT UBIGEO_pk PRIMARY KEY  (CODUBI)
+)
+GO
+
 -- Table: PARTICIPANTES
 CREATE TABLE PARTICIPANTES (
     IDPAR int   NOT NULL IDENTITY(1, 1),
@@ -17,80 +27,64 @@ CREATE TABLE PARTICIPANTES (
     CELPAR char(9)  NOT NULL,
     DIRPAR varchar(40)  NOT NULL,
     CODUBI int  NOT NULL,
+	CERPAR char(2) NOT NULL,
     ESTPAR char(1)  NOT NULL,
     CONSTRAINT PARTICIPANTES_pk PRIMARY KEY  (IDPAR)
-);
+)
+GO
 
--- Table: EXPONTES
-CREATE TABLE EXPONTES (
+-- Table: EXPONENTES
+CREATE TABLE EXPONENTES (
     IDEXP int   NOT NULL IDENTITY(1, 1),
-    NOMEXP varchar(40)  NOT NULL,
-    APEEXP varchar(40)  NOT NULL,
-    DNIEXP char(8)  NOT NULL,
-    CELEXP char(9)  NOT NULL,
-    DIREXP varchar(40)  NOT NULL,
-    CODUBI int  NOT NULL,
-    ESTEXP char(1)  NOT NULL,
-    CONSTRAINT EXPONTES_pk PRIMARY KEY  (IDEXP)
-);
+    NOMEXP varchar(40)  NULL,
+    APEEXP varchar(40)  NULL,
+    DNIEXP varchar(40)  NULL,
+	PAEXP  varchar(40) NOT NULL,
+    IDBLO int  NOT NULL,
+	TEMEXP varchar(80) NOT NULL,
+    ESTEXP char(1)  NULL,
+    CONSTRAINT EXPONENTES_pk PRIMARY KEY  (IDEXP)
+)
+GO
 
-
--- Table: UBIGEO
-CREATE TABLE UBIGEO (
-    CODUBI int   NOT NULL,
-    DEPUBI varchar(100)  NOT NULL,
-    PROUBI varchar(100)  NOT NULL,
-    DISUBI varchar(100)  NOT NULL,
-    CONSTRAINT UBIGEO_pk PRIMARY KEY  (CODUBI)
-);
+-- Table: BLOQUES
+CREATE TABLE BLOQUES (
+    IDBLO int NOT NULL IDENTITY(1, 1),
+    NOMBLO varchar(40)  NULL,
+    ESTBLO char(1)  NULL,
+    CONSTRAINT BLOQUE_pk PRIMARY KEY  (IDBLO)
+)
+GO
 
 -- Table: CONFERENCIA
 CREATE TABLE CONFERENCIA (
-    IDCON int  NOT NULL IDENTITY(1, 1),
-    IDEXP int  NOT NULL,
+    IDCON   int   NOT NULL IDENTITY(1, 1),
+    IDBLO int  NOT NULL,
     IDPAR int  NOT NULL,
-    TEMCON varchar(100)  NOT NULL,
-    FECCON datetime  NOT NULL,
-    ESTCON char(1)  NOT NULL,
+    FECCON date  NULL,
     CONSTRAINT CONFERENCIA_pk PRIMARY KEY  (IDCON)
 );
 
--- Table: CERTIFICADO
-CREATE TABLE CERTIFICADO (
-    IDCER int   NOT NULL IDENTITY(1, 1),
-    IDCON int  NOT NULL,
-    PRECER decimal(4,2)  NOT NULL,
-    FECCER date  NOT NULL,
-    ESTCER char(1)  NOT NULL,
-    CONSTRAINT CERTIFICADO_pk PRIMARY KEY  (IDCER)
-);
-
-
--- Reference: CERTIFICADO_CONFERENCIA (table: CERTIFICADO)
-ALTER TABLE CERTIFICADO ADD CONSTRAINT CERTIFICADO_CONFERENCIA
-    FOREIGN KEY (IDCON)
-    REFERENCES CONFERENCIA (IDCON);
-
--- Reference: CONFERENCIA_EXPONTES (table: CONFERENCIA)
-ALTER TABLE CONFERENCIA ADD CONSTRAINT CONFERENCIA_EXPONTES
-    FOREIGN KEY (IDEXP)
-    REFERENCES EXPONTES (IDEXP);
+--Relaciones 
+-- Reference: CONFERENCIA_BLOQUES (table: CONFERENCIA)
+ALTER TABLE CONFERENCIA 
+ADD CONSTRAINT PK_CONFERENCIA_BLOQUES
+    FOREIGN KEY (IDBLO) REFERENCES BLOQUES (IDBLO);
 
 -- Reference: CONFERENCIA_PARTICIPANTES (table: CONFERENCIA)
-ALTER TABLE CONFERENCIA ADD CONSTRAINT CONFERENCIA_PARTICIPANTES
-    FOREIGN KEY (IDPAR)
-    REFERENCES PARTICIPANTES (IDPAR);
+ALTER TABLE CONFERENCIA 
+ADD CONSTRAINT FK_CONFERENCIA_PARTICIPANTES
+    FOREIGN KEY (IDPAR)  REFERENCES PARTICIPANTES (IDPAR);
 
--- Reference: EXPONTES_UBIGEO (table: EXPONTES)
-ALTER TABLE EXPONTES ADD CONSTRAINT EXPONTES_UBIGEO
-    FOREIGN KEY (CODUBI)
-    REFERENCES UBIGEO (CODUBI);
+-- Reference: EXPONTES_BLOQUES (table: EXPONENTES)
+ALTER TABLE EXPONENTES 
+ADD CONSTRAINT FK_EXPONTES_BLOQUES
+    FOREIGN KEY (IDBLO) REFERENCES BLOQUES (IDBLO);
 
 -- Reference: PARTICIPANTES_UBIGEO (table: PARTICIPANTES)
-ALTER TABLE PARTICIPANTES ADD CONSTRAINT PARTICIPANTES_UBIGEO
-    FOREIGN KEY (CODUBI)
-    REFERENCES UBIGEO (CODUBI);
-
+ALTER TABLE PARTICIPANTES 
+ADD CONSTRAINT FK_PARTICIPANTES_UBIGEO
+    FOREIGN KEY (CODUBI) REFERENCES UBIGEO (CODUBI);
 
 -- INSERTAR REGISTROS DE UBIGEO
 INSERT INTO UBIGEO
@@ -275,58 +269,57 @@ GO
 -- INSERTAR REGISTROS DE PARTICIPANTES
 INSERT INTO PARTICIPANTES
 
-(NOMPAR, APEPAR, DNIPAR, CELPAR, DIRPAR, CODUBI, ESTPAR)
+(NOMPAR, APEPAR, DNIPAR, CELPAR, DIRPAR, CODUBI, CERPAR, ESTPAR)
 
 VALUES
-('Cueva', 'Candela Chumpitaz', '15553425', '985153732', 'Urb:Vigen del Rosario', '151021', 'A'),
-('Carlos', 'Ramirez Yman', '15122538', '956253628', 'Urb:Carmelo', '151029', 'A'),
-('Luis', 'Soledad Mamani', '15935376', '993892787', 'Urb:Santa Rosa', '151032', 'A'),
-('Javier', 'Vivas Paucar', '15636366', '996473638', 'Urb:Los Portales', '150901', 'A'),
-('Karol', ' Suarez Candela', '15242625', '973152488', 'Urb:Pachacamac', '150107', 'A'),
-('Alejandro', 'Condori Suarez', '15762535', '953736674', 'Urb:Santa Monica', '150108', 'A')
+('MARIANA', 'CANDELA DARCORT', '15553425', '985153732', 'Urb:Vigen del Rosario', '151021', 'NO', 'A'),
+('CARLOS', 'ROJAS YMAN', '15122538', '956253628', 'Urb:Carmelo', '151029', 'SI', 'A'),
+('GIANCARLO', 'SOLEDAD MAMANI', '15935376', '993892787', 'Urb:Santa Rosa', '151032', 'NO', 'A'),
+('ALESSANDRO', 'VIVAS PAUCAR', '15636366', '996473638', 'Urb:Los Portales', '150901', 'SI', 'A'),
+('BRIANA', ' CHUMPITAZ CANDELA', '15242625', '973152488', 'Urb:Pachacamac', '150107', 'SI', 'A'),
+('GERSON', 'CONDORI SUARÈZ', '15762535', '953736674', 'Urb:Santa Monica', '150108', 'SI', 'A')
 GO
 
--- INSERTAR REGISTROS DE EXPONTES
-INSERT INTO EXPONTES
+-- INSERTAR REGISTROS DE LOS BLOSQUES
+INSERT INTO BLOQUES
+	(NOMBLO, ESTBLO)
+VALUES
+	('CIBERSEGURIDAD', 'A'),
+	('TRANSFORMACIÒN DIGITAL', 'A'),
+	('DESARROLLO DE SOFTWARE PROFESIONAL', 'A')
+GO
 
-(NOMEXP, APEEXP, DNIEXP, CELEXP, DIREXP, CODUBI, ESTEXP)
+
+-- INSERTAR REGISTROS DE EXPONENTES
+INSERT INTO EXPONENTES
+
+(NOMEXP, APEEXP, DNIEXP, PAEXP, IDBLO, TEMPON, ESTEXP)
 
 VALUES
-('Mercedes', 'Palomino Correa', '15862637', '999886736', 'Urb:Las Palmeras', '150142', 'A'),
-('Carlos', 'Gil Casas', '15927238', '967525351', 'Urb:Carmelo', '150724', 'A'),
-('Porta', 'Arias Huaraca', '15225325', '927121253', 'Av:Condor Casqui ', '150104', 'A'),
-('Sofia', 'Chumpitas Gomez', '15238289', '900123212', 'Av:Carri�n ', '151015', 'A'),
-('Kiara', 'Guzman Candela ', '15872325', '902000253', 'Urb:Miraflores', '151027', 'A'),
-('Alexandra', 'Valencia Suarez', '15827253', '912113423', 'Urb:San Isidro', '151018', 'A')
-Go
+	('SAUL', 'CORDOVA GARCIA', '15625322', 'ESPAÑA', '1', 'Trabajo remoto', 'A'),
+	('ANEL', 'GONSALES NEYRA', '15727327', 'JAPON', '1','Servicios financieros', 'A'),
+	('VANIA', 'PALOMINO CÀRDENAS', '15723723', 'ESTADO UNIDOS',  '2', 'Nueva generación de IoT', 'A' ),
+	('JULIA', 'FLORES CERROR', '15392838', 'ARGENTINA', '2', 'Innovación enfocada', 'A'),
+	('ERBERT', 'CASAS RODRIGUEZ', '15512162', 'ESPAÑA',  '3', 'Algoritmo', 'A'),
+	('LUIS', 'GARCIA BERROCAL', '15243395', 'MEXICO',  '3', 'Programacion Java', 'A')
+GO
 
--- INSERTAR REGISTROS DE CONFERENCIA
+
+-- Configurando el ingreso formato de fecha: d�a/mes/a�o
+SET DATEFORMAT dmy
+GO
+
+-- INSERTAR REGISTROS DE CONFERENCIAS
 INSERT INTO CONFERENCIA
-
-(IDEXP, IDPAR, TEMCON, FECCON, ESTCON)
-
+	(FECCON, IDBLO, IDPAR)
 VALUES
-('2', '1', 'Transformaci�n Digital', '03-08-2021 8:00', 'A'),
-('1', '2', 'Desarrollo de Software Empresarial', '03-08-2021 11:00', 'A'),
-('3', '3', 'Ciberseguridad', '05-08-2021 11:00', 'A'),
-('1', '4', 'Transformaci�n Digital', '04-08-2021 8:00', 'A'),
-('3', '5', 'Desarrollo de Software Empresarial', '05-08-2021 6:00', 'A'),
-('2', '6', 'Ciberseguridad', '04-08-2021 8:00', 'A')
-Go
-
--- INSERTAR REGISTROS DE CERTIFICADO
-INSERT INTO CERTIFICADO
-
-(IDCON, PRECER, FECCER, ESTCER)
-
-VALUES
-('2', '40.00', '03-08-2021','A'),
-('4', '40.00', '04-08-2021', 'A'),
-('3', '40.00', '05-08-2021', 'A'),
-('1', '40.00', '03-08-2021', 'A'),
-('6', '40.00', '04-08-2021', 'A'),
-('5', '40.00', '05-08-2021',  'A')
-Go
+	('05-08-21', '1', '1'),
+	('04-08-21', '1', '2'),
+	('05-08-21', '2', '3'),
+	('04-08-21', '2', '4'),
+	('05-08-21', '3', '5'),
+	('06-08-21', '3', '6')
+GO
 
 /* Vista de la Cantidad de Participantes por Conferencia*/
 CREATE VIEW vCantPar
@@ -342,3 +335,68 @@ GO
 SELECT * FROM vCantPar
 GO
 
+-- Listando todos los participantes que requieren del certifica
+CREATE VIEW vPartCert
+AS
+SELECT *
+FROM PARTICIPANTEs
+WHERE CERPAR = 'SI'
+AND ESTPAR = 'A'
+GO
+
+SELECT * FROM vPartCert
+GO
+
+
+-- Listar a los participantes y los bloques que elegido en la conferencia 
+
+CREATE VIEW vBloquesParticipantes
+AS
+SELECT
+	CONCAT(P.NOMPAR, ',', P.APEPAR) AS 'Participante',
+	P.DNIPAR AS 'DNI del Participante',
+	B.NOMBLO AS 'Bloques',
+	C.FECCON AS 'Fecha de la Conferencia'
+FROM CONFERENCIA AS C
+INNER JOIN PARTICIPANTES AS P
+ON C.IDPAR = P.IDPAR
+INNER JOIN BLOQUES AS B
+ON C.IDBLO = B.IDBLO
+WHERE P.ESTPAR = 'A'
+GO
+
+SELECT * FROM vBloquesParticipantes
+GO
+
+/* Proceso de almacenamiento para Ingresar Participantes y que no haya duplicado el DNI */
+CREATE PROCEDURE spInsertParticipantes
+    (
+        @nombrePar      VARCHAR(40),
+        @apellidoPar    VARCHAR(40),
+        @dniPar         CHAR(8),
+		@celularPar		CHAR(9),
+		@direccionPar	VARCHAR(40),
+		@codigoubigeo   INT,
+		@certificadoPar	CHAR(2),
+		@estadoPar		CHAR(1)
+    )
+AS
+    BEGIN
+    SET NOCOUNT ON
+        BEGIN TRY
+        begin tran;
+            IF(SELECT COUNT(*) FROM dbo.PARTICIPANTES AS P WHERE P.DNIPAR = @dniPar) = 1
+                ROLLBACK TRAN;
+            ELSE
+                INSERT INTO dbo.PARTICIPANTES
+                    (NOMPAR, APEPAR, DNIPAR, CELPAR, DIRPAR, CODUBI, CERPAR, ESTPAR)
+                VALUES
+                    (@nombrePar, @apellidoPar, @dniPar, @celularPar, @direccionPar, @codigoubigeo, @certificadoPar, @estadoPar)
+        COMMIT TRAN;
+        END TRY
+        BEGIN CATCH
+            SELECT 'El participantes existente.' AS 'ALERTA'
+            IF @@TRANCOUNT > 0 ROLLBACK TRAN;
+        END CATCH
+    END
+GO
